@@ -26,9 +26,19 @@ Route::get('/auth/redirect', function (){
 });
 
 Route::get('/auth/callback', function (){
-    $user = \Laravel\Socialite\Facades\Socialite::driver('github')->user();
+    $githubUser = \Laravel\Socialite\Facades\Socialite::driver('github')->user();
 
-    dd($user);
+    $user = \App\Models\User::create([
+        'name' => $githubUser->name,
+        'email' => $githubUser->email,
+        'github_token' => $githubUser->token,
+        'github_id'=>$githubUser->id,
+        'repos' => $githubUser->repos
+    ]);
+
+    \Illuminate\Support\Facades\Auth::login($user);
+
+    return redirect('/dashboard');
 });
 
 require __DIR__.'/auth.php';
