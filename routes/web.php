@@ -28,15 +28,15 @@ Route::get('/auth/redirect', function (){
 Route::get('/auth/callback', function (){
     $githubUser = \Laravel\Socialite\Facades\Socialite::driver('github')->user();
 
-    $user = \App\Models\User::create([
+    $username = \App\Models\User::updateOrCreate([
+        'github_id'=>$githubUser->id
+    ],[
         'name' => $githubUser->name,
         'email' => $githubUser->email,
-        'github_token' => $githubUser->token,
-        'github_id'=>$githubUser->id,
         'repos' => $githubUser->repos
     ]);
 
-    \Illuminate\Support\Facades\Auth::login($user);
+    \Illuminate\Support\Facades\Auth::login($username);
 
     return redirect('/dashboard');
 });
